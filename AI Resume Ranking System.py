@@ -21,18 +21,30 @@ st.set_page_config(
 st.markdown("""
 <style>
 
+/* MAIN BACKGROUND */
+
 .main {
     background-color: #0f172a;
     color: white;
 }
 
+/* SIDEBAR */
+
 section[data-testid="stSidebar"] {
-    background-color: #020617;
+    background-color: #020617 !important;
 }
 
-h1, h2, h3, h4 {
-    color: white;
+section[data-testid="stSidebar"] * {
+    color: white !important;
 }
+
+/* HEADINGS */
+
+h1, h2, h3, h4 {
+    color: black !important;
+}
+
+/* BUTTON */
 
 .stButton>button {
     background: linear-gradient(90deg,#7c3aed,#2563eb);
@@ -44,11 +56,15 @@ h1, h2, h3, h4 {
     font-weight: bold;
 }
 
+/* TEXT AREA */
+
 .stTextArea textarea {
-    background-color: #1e293b;
-    color: white;
+    background-color: #1e293b !important;
+    color: white !important;
     border-radius: 12px;
 }
+
+/* CARD */
 
 .card {
     background-color: #1e293b;
@@ -56,13 +72,6 @@ h1, h2, h3, h4 {
     border-radius: 15px;
     margin-bottom: 15px;
     box-shadow: 0px 0px 15px rgba(0,0,0,0.4);
-}
-
-.metric-card {
-    background: linear-gradient(135deg,#1e293b,#0f172a);
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
 }
 
 </style>
@@ -93,7 +102,13 @@ st.title("🚀 AI Resume Ranking System")
 st.markdown("""
 ### Intelligent Candidate Ranking Platform
 
-Upload resumes + job description and get: 
+Upload resumes + job description and get:
+
+✅ ATS Score  
+✅ AI Match Score  
+✅ Candidate Ranking  
+✅ Skill Gap Analysis  
+✅ XLSX Export  
 """)
 
 # ---------------------------------------------------
@@ -222,7 +237,7 @@ if st.button("🔍 Analyze Candidates"):
 
         st.dataframe(
             df,
-            width='stretch'
+            use_container_width=True
         )
 
         # ---------------------------------------------------
@@ -273,7 +288,7 @@ if st.button("🔍 Analyze Candidates"):
 
         st.plotly_chart(
             fig,
-            width='stretch'
+            use_container_width=True
         )
 
         fig2 = px.pie(
@@ -284,7 +299,7 @@ if st.button("🔍 Analyze Candidates"):
 
         st.plotly_chart(
             fig2,
-            width='stretch'
+            use_container_width=True
         )
 
     # ---------------------------------------------------
@@ -299,6 +314,7 @@ if st.button("🔍 Analyze Candidates"):
 
             st.markdown(f"""
             <div class="card">
+
                 <h3>{row['Candidate']}</h3>
 
                 <p>
@@ -343,7 +359,10 @@ if st.button("🔍 Analyze Candidates"):
 
             st.markdown(f"""
             <div class="card">
-                <h2>#{row['Rank']} - {row['Candidate']}</h2>
+
+                <h2>
+                #{row['Rank']} - {row['Candidate']}
+                </h2>
 
                 <h3>
                 Match Score: {row['Match Score']}%
