@@ -1,163 +1,287 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        
-            <script src="lib/bindings/utils.js"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-            
-        
-<center>
-<h1></h1>
-</center>
 
-<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
-<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
-        <link
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
-          crossorigin="anonymous"
-        />
-        <script
-          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-          crossorigin="anonymous"
-        ></script>
+<head>
+    <meta charset="utf-8">
 
+    <!-- VIS NETWORK -->
+    <script type="text/javascript"
+        src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
-        <center>
-          <h1></h1>
-        </center>
-        <style type="text/css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
+        }
 
-             #mynetwork {
-                 width: 100%;
-                 height: 550px;
-                 background-color: #111827;
-                 border: 1px solid lightgray;
-                 position: relative;
-                 float: left;
-             }
+        .graph-container {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-             
+        .graph-title {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-             
+        #mynetwork {
+            width: 100%;
+            height: 650px;
+            background: linear-gradient(135deg, #111827, #1e293b);
+            border-radius: 20px;
+            border: 2px solid #334155;
+            box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
 
-             
-        </style>
-    </head>
+<body>
 
+    <div class="graph-container">
 
-    <body>
-        <div class="card" style="width: 100%">
-            
-            
-            <div id="mynetwork" class="card-body"></div>
+        <div class="graph-title">
+            🚀 SkillGraph AI — Candidate Skill Network
         </div>
 
-        
-        
+        <div id="mynetwork"></div>
 
-        <script type="text/javascript">
+    </div>
 
-              // initialize global variables.
-              var edges;
-              var nodes;
-              var allNodes;
-              var allEdges;
-              var nodeColors;
-              var originalNodes;
-              var network;
-              var container;
-              var options, data;
-              var filter = {
-                  item : '',
-                  property : '',
-                  value : []
-              };
+    <script type="text/javascript">
 
-              
+        // -------------------------------
+        // NODES
+        // -------------------------------
 
-              
+        const nodes = new vis.DataSet([
 
-              // This method is responsible for drawing the graph, returns the drawn network
-              function drawGraph() {
-                  var container = document.getElementById('mynetwork');
+            {
+                id: "python",
+                label: "Python",
+                color: "#22c55e",
+                shape: "dot",
+                size: 28,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  
+            {
+                id: "aws",
+                label: "AWS",
+                color: "#3b82f6",
+                shape: "dot",
+                size: 26,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "green", "font": {"color": "white"}, "id": "python", "label": "python", "shape": "dot"}, {"color": "green", "font": {"color": "white"}, "id": "aws", "label": "aws", "shape": "dot"}, {"color": "green", "font": {"color": "white"}, "id": "docker", "label": "docker", "shape": "dot"}, {"color": "green", "font": {"color": "white"}, "id": "nlp", "label": "nlp", "shape": "dot"}, {"color": "red", "font": {"color": "white"}, "id": "machine", "label": "machine", "shape": "dot"}, {"color": "red", "font": {"color": "white"}, "id": "kubernetes", "label": "kubernetes", "shape": "dot"}, {"color": "red", "font": {"color": "white"}, "id": "deep", "label": "deep", "shape": "dot"}, {"color": "red", "font": {"color": "white"}, "id": "learning", "label": "learning", "shape": "dot"}, {"color": "red", "font": {"color": "white"}, "id": "skills", "label": "skills", "shape": "dot"}, {"color": "red", "font": {"color": "white"}, "id": "engineer", "label": "engineer", "shape": "dot"}]);
-                  edges = new vis.DataSet([{"from": "python", "to": "aws"}, {"from": "aws", "to": "docker"}, {"from": "docker", "to": "nlp"}]);
+            {
+                id: "docker",
+                label: "Docker",
+                color: "#06b6d4",
+                shape: "dot",
+                size: 26,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  nodeColors = {};
-                  allNodes = nodes.get({ returnType: "Object" });
-                  for (nodeId in allNodes) {
-                    nodeColors[nodeId] = allNodes[nodeId].color;
-                  }
-                  allEdges = edges.get({ returnType: "Object" });
-                  // adding nodes and edges to the graph
-                  data = {nodes: nodes, edges: edges};
+            {
+                id: "nlp",
+                label: "NLP",
+                color: "#8b5cf6",
+                shape: "dot",
+                size: 26,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  var options = {
-    "configure": {
-        "enabled": false
-    },
-    "edges": {
-        "color": {
-            "inherit": true
-        },
-        "smooth": {
-            "enabled": true,
-            "type": "dynamic"
-        }
-    },
-    "interaction": {
-        "dragNodes": true,
-        "hideEdgesOnDrag": false,
-        "hideNodesOnDrag": false
-    },
-    "physics": {
-        "barnesHut": {
-            "avoidOverlap": 0,
-            "centralGravity": 0.3,
-            "damping": 0.09,
-            "gravitationalConstant": -80000,
-            "springConstant": 0.001,
-            "springLength": 250
-        },
-        "enabled": true,
-        "stabilization": {
-            "enabled": true,
-            "fit": true,
-            "iterations": 1000,
-            "onlyDynamicEdges": false,
-            "updateInterval": 50
-        }
-    }
-};
+            {
+                id: "machine",
+                label: "Machine Learning",
+                color: "#ef4444",
+                shape: "dot",
+                size: 30,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  
+            {
+                id: "kubernetes",
+                label: "Kubernetes",
+                color: "#f97316",
+                shape: "dot",
+                size: 28,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
+            {
+                id: "deep",
+                label: "Deep Learning",
+                color: "#ec4899",
+                shape: "dot",
+                size: 30,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  
+            {
+                id: "skills",
+                label: "Skill Matching",
+                color: "#14b8a6",
+                shape: "dot",
+                size: 30,
+                font: {
+                    color: "white",
+                    size: 20
+                }
+            },
 
-                  network = new vis.Network(container, data, options);
+            {
+                id: "engineer",
+                label: "AI Engineer",
+                color: "#eab308",
+                shape: "star",
+                size: 35,
+                font: {
+                    color: "white",
+                    size: 22
+                }
+            }
 
-                  
+        ]);
 
-                  
+        // -------------------------------
+        // EDGES
+        // -------------------------------
 
-                  
+        const edges = new vis.DataSet([
 
+            {
+                from: "python",
+                to: "machine"
+            },
 
-                  
+            {
+                from: "machine",
+                to: "deep"
+            },
 
-                  return network;
+            {
+                from: "deep",
+                to: "nlp"
+            },
 
-              }
-              drawGraph();
-        </script>
-    </body>
+            {
+                from: "python",
+                to: "docker"
+            },
+
+            {
+                from: "docker",
+                to: "kubernetes"
+            },
+
+            {
+                from: "aws",
+                to: "docker"
+            },
+
+            {
+                from: "skills",
+                to: "engineer"
+            },
+
+            {
+                from: "machine",
+                to: "engineer"
+            },
+
+            {
+                from: "nlp",
+                to: "engineer"
+            }
+
+        ]);
+
+        // -------------------------------
+        // GRAPH CONTAINER
+        // -------------------------------
+
+        const container = document.getElementById("mynetwork");
+
+        const data = {
+            nodes: nodes,
+            edges: edges
+        };
+
+        // -------------------------------
+        // OPTIONS
+        // -------------------------------
+
+        const options = {
+
+            nodes: {
+                borderWidth: 2
+            },
+
+            edges: {
+                color: "#94a3b8",
+                smooth: {
+                    type: "dynamic"
+                },
+                width: 2
+            },
+
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: -3000,
+                    springLength: 180,
+                    springConstant: 0.04
+                }
+            },
+
+            interaction: {
+                hover: true,
+                dragNodes: true,
+                zoomView: true
+            }
+        };
+
+        // -------------------------------
+        // CREATE NETWORK
+        // -------------------------------
+
+        const network = new vis.Network(
+            container,
+            data,
+            options
+        );
+
+    </script>
+
+</body>
+
 </html>
